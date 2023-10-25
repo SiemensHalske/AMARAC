@@ -14,7 +14,7 @@ def download_video(url, path):
 
     if stream:
         stream.download(path, filename=yt.title, 
-                        filename_prefix='downloading: ')
+                        filename_prefix='now downloading: ')
     else:
         print("Could not find a valid stream.")
 

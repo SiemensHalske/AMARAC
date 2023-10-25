@@ -39,6 +39,8 @@ def main(video_file: str, frame_rate: int):
     num_frames = int(total_frames / frame_rate)
 
     # Calculate total size of frames to be extracted
+    # t = num_frames * x * y * y / z / z
+    # t = ( num_frames * x * y² * z ) / z
     total_size = round(num_frames * 3 * 224 * 224 / 1024 / 1024, 2)
 
     # Show user the estimated number of frames and their total size
@@ -51,7 +53,7 @@ def main(video_file: str, frame_rate: int):
     frame_counter = 0
 
     # Loop over all frames
-    for i in tqdm(range(total_frames), desc="Extracting frames"):
+    for i in tqdm(range(total_frames), desc="Extracting frames", total=total_frames, position=0, leave=True):
         # Read frame
         ret, frame = cap.read()
 
