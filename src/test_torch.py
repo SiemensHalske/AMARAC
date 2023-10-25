@@ -1,73 +1,83 @@
-import torch
-import torch.nn as nn
-import torch.optim as optim
-import torchvision.datasets as datasets
-import torchvision.transforms as transforms
+import tensorflow as tf
+import keras
+from keras import layers
+import os
+import custom_optimizers as optimizers
 
-# Define the CNN architecture
+# Create the data directory if it doesn't exist
+if not os.path.exists('../data/'):
+    os.makedirs('../data/')
 
+# Load the CIFAR-10 dataset
+(x_train, y_train), (x_test, y_test) = keras.datasets.cifar10.load_data()
 
-class CNN(nn.Module):
-    def __init__(self):
-        super(CNN, self).__init__()
-        self.conv1 = nn.Conv2d(3, 6, 5)
-        self.pool = nn.MaxPool2d(2, 2)
-        self.conv2 = nn.Conv2d(6, 16, 5)
-        self.fc1 = nn.Linear(16 * 5 * 5, 120)
-        self.fc2 = nn.Linear(120, 84)
-        self.fc3 = nn.Linear(84, 10)
+# Normalize pixel values to be between 0 and 1
+x_train = x_train.astype("float32") / 255.0
+x_test = x_test.astype("float32") / 255.0
 
-    def forward(self, x):
-        x = self.pool(torch.relu(self.conv1(x)))
-        x = self.pool(torch.relu(self.conv2(x)))
-        x = x.view(-1, 16 * 5 * 5)
-        x = torch.relu(self.fc1(x))
-        x = torch.relu(self.fc2(x))
-        x = self.fc3(x)
-        return x
+# Save the data to the data directory
 
 
-# Define the training and testing datasets
-train_dataset = datasets.CIFAR10(root='./data', train=True, download=True, transform=transforms.ToTensor())
-test_dataset = datasets.CIFAR10(root='./data', train=False, download=True, transform=transforms.ToTensor())
+def save_images(x, y, folder):
+    file_path = f'../data/{folder}/{y}_{y}.png'
+    tf.io.write_file(file_path, tf.image.encode_png(tf.cast(x, tf.uint8)))
 
-# Define the data loaders
-train_loader = torch.utils.data.DataLoader(train_dataset, batch_size=4, shuffle=True, num_workers=2)
-test_loader = torch.utils.data.DataLoader(test_dataset, batch_size=4, shuffle=False, num_workers=2)
 
-# Define the CNN model
-cnn = CNN()
+def tf_save_images(x, y, folder):
+    py_func = tf.py_function(
+        func=save_images,
+        inp=[x, y, folder],
+        Tout=[]
+    )
+    # Make sure the py_function op is triggered
+    with tf.control_dependencies([py_func]):
+        y = tf.identity(y)
+    return y
 
-# Define the loss function and optimizer
-criterion = nn.CrossEntropyLoss()
-optimizer = optim.SGD(cnn.parameters(), lr=0.001, momentum=0.9)
-for epoch in range(2):
-    running_loss = 0.0
-    for i, data in enumerate(train_loader, 0):
-        inputs, labels = data
-        optimizer.zero_grad()
-        outputs = cnn(inputs)
-        loss = criterion(outputs, labels)
-        loss.backward()
-        optimizer.step()
-        running_loss += loss.item()
-        if i % 2000 == 1999:
-            print('[%d, %5d] loss: %.3f' %
-                  (epoch + 1, i + 1, running_loss / 2000))
-            running_loss = 0.0
 
-print('Finished Training')
+train_ds = tf.data.Dataset.from_tensor_slices((x_train, y_train)).map(
+    lambda x, y: (tf.image.encode_png(tf.cast(x, tf.uint8)), y)
+).map(
+    lambda x, y: (tf_save_images(x, y, 'train'), y)
+).batch(64)
 
-# Test the CNN
-correct = 0
-total = 0
-with torch.no_grad():
-    for data in test_loader:
-        images, labels = data
-        outputs = cnn(images)
-        _, predicted = torch.max(outputs.data, 1)
-        total += labels.size(0)
-        correct += (predicted == labels).sum().item()
+# Define the model architecture
+model = keras.Sequential(
+    [
+        keras.Input(shape=(32, 32, 3)),
+        layers.Conv2D(32, kernel_size=(3, 3), activation="relu"),
+        layers.BatchNormalization(),
+        layers.Conv2D(64, kernel_size=(3, 3), activation="relu"),
+        layers.BatchNormalization(),
+        layers.MaxPooling2D(pool_size=(2, 2)),
+        layers.Conv2D(128, kernel_size=(3, 3), activation="relu"),
+        layers.BatchNormalization(),
+        layers.Conv2D(256, kernel_size=(3, 3), activation="relu"),
+        layers.BatchNormalization(),
+        layers.MaxPooling2D(pool_size=(2, 2)),
+        layers.Flatten(),
+        layers.Dropout(0.5),
+        layers.Dense(128, activation="relu"),
+        layers.BatchNormalization(),
+        layers.Dropout(0.5),
+        layers.Dense(10, activation="softmax"),
+    ]
+)
 
-print('Accuracy of the network on the 10000 test images: %d %%' %
-      (100 * correct / total))
+# Compile the model
+model.compile(loss="sparse_categorical_crossentropy",
+              optimizer=optimizers.optimizer_adam, metrics=["accuracy"])
+
+# Train the model
+model.fit(
+    x_train,
+    y_train,
+    batch_size=64,
+    epochs=10,
+    validation_split=0.1
+)
+
+# Evaluate the model on the test set
+score = model.evaluate(x_test, y_test, verbose=0)
+print("Test loss:", score[0])
+print("Test accuracy:", score[1])
