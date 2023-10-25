@@ -5,6 +5,8 @@ import torchvision.datasets as datasets
 import torchvision.transforms as transforms
 
 # Define the CNN architecture
+
+
 class CNN(nn.Module):
     def __init__(self):
         super(CNN, self).__init__()
@@ -24,9 +26,6 @@ class CNN(nn.Module):
         x = self.fc3(x)
         return x
 
-import urllib.request
-import os
-from torchvision.datasets.utils import download_url
 
 # Define the training and testing datasets
 train_dataset = datasets.CIFAR10(root='./data', train=True, download=True, transform=transforms.ToTensor())
@@ -53,7 +52,8 @@ for epoch in range(2):
         optimizer.step()
         running_loss += loss.item()
         if i % 2000 == 1999:
-            print('[%d, %5d] loss: %.3f' % (epoch + 1, i + 1, running_loss / 2000))
+            print('[%d, %5d] loss: %.3f' %
+                  (epoch + 1, i + 1, running_loss / 2000))
             running_loss = 0.0
 
 print('Finished Training')
@@ -69,4 +69,5 @@ with torch.no_grad():
         total += labels.size(0)
         correct += (predicted == labels).sum().item()
 
-print('Accuracy of the network on the 10000 test images: %d %%' % (100 * correct / total))
+print('Accuracy of the network on the 10000 test images: %d %%' %
+      (100 * correct / total))
