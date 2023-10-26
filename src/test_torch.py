@@ -1,15 +1,16 @@
+from keras.regularizers import l1_l2
 import tensorflow as tf
 import keras
 from keras import layers
 import os
-import custom_optimizers as optimizers
+import custom_optimizers as optim
 
 # Create the data directory if it doesn't exist
 if not os.path.exists('../data/'):
     os.makedirs('../data/')
 
 # Load the CIFAR-10 dataset
-(x_train, y_train), (x_test, y_test) = keras.datasets.cifar10.load_data()
+(x_train, y_train), (x_test, y_test) = keras.datasets.cifar100.load_data()
 
 # Normalize pixel values to be between 0 and 1
 x_train = x_train.astype("float32") / 255.0
@@ -42,6 +43,10 @@ train_ds = tf.data.Dataset.from_tensor_slices((x_train, y_train)).map(
 ).batch(64)
 
 # Define the model architecture
+
+L1 = 0.0025
+L2 = 0.005
+
 model = keras.Sequential(
     [
         keras.Input(shape=(32, 32, 3)),
@@ -52,27 +57,32 @@ model = keras.Sequential(
         layers.MaxPooling2D(pool_size=(2, 2)),
         layers.Conv2D(128, kernel_size=(3, 3), activation="relu"),
         layers.BatchNormalization(),
-        layers.Conv2D(256, kernel_size=(3, 3), activation="relu"),
-        layers.BatchNormalization(),
+        # layers.Conv2D(256, kernel_size=(3, 3), activation="relu"),
+        # layers.BatchNormalization(),
         layers.MaxPooling2D(pool_size=(2, 2)),
         layers.Flatten(),
-        layers.Dropout(0.5),
-        layers.Dense(128, activation="relu"),
+        layers.Dropout(0.2),
+        layers.Dense(128, activation="relu", kernel_regularizer=l1_l2(l1=L1, l2=L2)),
         layers.BatchNormalization(),
-        layers.Dropout(0.5),
-        layers.Dense(10, activation="softmax"),
+        layers.Dense(64, activation="relu", kernel_regularizer=l1_l2(l1=L1, l2=L2)),
+        layers.BatchNormalization(),
+        layers.Dropout(0.2),
+        layers.Dense(100, activation="softmax"),
     ]
 )
 
+_ = optim.optimizer_adam(learning_rate=0.0005)
+c_optimizer = _.optimizer
+
 # Compile the model
 model.compile(loss="sparse_categorical_crossentropy",
-              optimizer=optimizers.optimizer_adam, metrics=["accuracy"])
+              optimizer=c_optimizer, metrics=["accuracy"])
 
 # Train the model
 model.fit(
     x_train,
     y_train,
-    batch_size=64,
+    batch_size=32,
     epochs=10,
     validation_split=0.1
 )
