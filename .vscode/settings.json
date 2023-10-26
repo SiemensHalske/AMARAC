@@ -1,5 +1,5 @@
 {
-    "github.copilot.inlineSuggest.enable": false,
+    "github.copilot.inlineSuggest.enable": true,
     "[python]": {
         "editor.defaultFormatter": "ms-python.autopep8"
     },
