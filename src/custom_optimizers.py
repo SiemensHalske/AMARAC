@@ -30,16 +30,15 @@ class optimizer_sgd:
             name=self.name
         )
 
-        return self.optimizer
-
 
 class optimizer_rmsprop:
-    def __init__(self, learning_rate=0.001, rho=0.9, momentum=0.0, epsilon=1e-07, centered=False, name='RMSprop'):
+    def __init__(self, learning_rate=None, rho=0.9, momentum=0.0, epsilon=1e-07, centered=False, name='RMSprop', decay=0.0):
         self.learning_rate = learning_rate
         self.rho = rho
         self.momentum = momentum
         self.epsilon = epsilon
         self.centered = centered
+        self.weight_decay = decay
         self.name = name
         self.optimizer = optimizers.RMSprop(
             learning_rate=self.learning_rate,
@@ -47,7 +46,6 @@ class optimizer_rmsprop:
             momentum=self.momentum,
             epsilon=self.epsilon,
             centered=self.centered,
+            weight_decay=self.weight_decay,
             name=self.name
         )
-
-        return self.optimizer

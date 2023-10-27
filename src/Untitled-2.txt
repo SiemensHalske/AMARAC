@@ -1,0 +1,102 @@
+\documentclass[12pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath}
+\usepackage{graphicx}
+\usepackage{hyperref}
+\usepackage{enumitem} % For custom lists
+\usepackage{titlesec} % For customizing section and subsection headers
+
+% Styling the section and subsection headers
+\titleformat{\section}[block]{\normalfont\Large\bfseries}{\thesection}{1em}{}
+\titleformat{\subsection}[block]{\normalfont\large\bfseries}{\thesubsection}{1em}{}
+\titleformat{\subsubsection}[block]{\normalfont\normalsize\bfseries}{\thesubsubsection}{1em}{}
+
+\title{Lösungen für IT-Berufe: LF3: Clients in Netzwerke einbinden}
+\author{Hendrik}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+\tableofcontents
+
+\section{Teilauftrag 1}
+\subsection{\underline{Wesentliche Aufgaben eines Routers}}
+Router sind die Verkehrspolizisten des Internets. Ihre Hauptaufgaben sind:
+\begin{itemize}[label={$\bullet$}]
+    \item \textbf{Datenpakete weiterleiten:} Sie sorgen dafür, dass Datenpakete von der Quelle zum Ziel gelangen, oft über mehrere Netzwerke hinweg.
+    \item \textbf{Routingtabellen verwalten:} Router halten eine aktuelle Liste der besten Wege zu verschiedenen Zielen.
+    \item \textbf{Netzwerkverkehr steuern:} Sie können den Netzwerkverkehr filtern und steuern, um die Netzwerkleistung zu optimieren.
+\end{itemize}
+
+\subsection{\underline{ISO/OSI-Schichten}}
+Router operieren hauptsächlich auf der Netzwerkschicht (Layer 3) des ISO/OSI-Modells. Manchmal können sie auch auf der Vermittlungsschicht (Layer 2) arbeiten.
+
+\vspace{1cm}
+
+\section{Teilauftrag 2}
+\subsection{\underline{Informationen in der Routingtabelle}}
+Die Routingtabelle eines Routers ist wie sein Gedächtnis. Sie enthält:
+\begin{itemize}[label={$\bullet$}]
+    \item \textbf{Zielnetzwerk:} Die IP-Adresse des Zielnetzwerks.
+    \item \textbf{Nächstgelegener Router:} Die IP-Adresse des nächsten Routers auf dem Weg zum Ziel.
+    \item \textbf{Metrik:} Ein Wert, der die "Kosten" für die Route angibt.
+    \item \textbf{Interface:} Das Netzwerkinterface, über das die Datenpakete gesendet werden.
+\end{itemize}
+
+\subsection{\underline{Begriff "DefaultRouter"}}
+Der DefaultRouter ist der Router, der verwendet wird, wenn für ein bestimmtes Zielnetzwerk keine spezifische Route in der Routingtabelle vorhanden ist. Er ist sozusagen der "Notausgang" für Datenpakete.
+
+\subsection{\underline{Informationen in der Routingtabelle}}
+Die Informationen in der Routingtabelle können aus verschiedenen Quellen stammen:
+\begin{itemize}[label={$\bullet$}]
+    \item \textbf{Manuelle Konfiguration:} Ein Netzwerkadministrator kann die Tabelle manuell einrichten.
+    \item \textbf{Routing-Protokolle:} Protokolle wie RIP oder OSPF können automatisch Routinginformationen austauschen.
+    \item \textbf{Dynamische Zuweisung:} Dienste wie BootP oder DHCP können Routinginformationen dynamisch zuweisen.
+\end{itemize}
+
+\vspace{1cm}
+
+\section{Teilauftrag 3}
+\subsection*{\underline{IPv4-Header-Teile}}
+Ein Router analysiert bestimmte Teile des IPv4-Headers, um Entscheidungen zu treffen:
+\begin{itemize}[label={$\bullet$}]
+    \item \textbf{Ziel-IP-Adresse:} Um die richtige Schnittstelle für die Weiterleitung des Pakets zu bestimmen.
+    \item \textbf{TTL (Time-to-Live):} Um zu entscheiden, ob das Paket überhaupt weitergeleitet werden soll. Ein zu niedriger TTL-Wert könnte darauf hindeuten, dass das Paket in einer Schleife gefangen ist.
+\end{itemize}
+
+\vspace{1cm}
+
+\section{Teilauftrag 4}
+\subsection{\underline{Multiprotokollfähiger Router}}
+Ein multiprotokollfähiger Router ist ein echtes Schweizer Taschenmesser. Er kann:
+\begin{itemize}[label={$\bullet$}]
+    \item Mehrere Netzwerkprotokolle wie IP, IPX und AppleTalk verstehen und verarbeiten.
+    \item Sich in verschiedenen Netzwerkumgebungen einfügen, was ihn besonders vielseitig macht.
+\end{itemize}
+
+\vspace{1cm}
+
+\section{Teilauftrag 5}
+\subsection{\underline{Router vs. Switch}}
+Router und Switches sind wie Äpfel und Orangen – ähnlich, aber doch verschieden. Hier sind einige Unterschiede und Gemeinsamkeiten:
+\begin{itemize}[label={$\bullet$}]
+    \item \textbf{Arbeitsschicht:} Router arbeiten auf Layer 3, während Switches auf Layer 2 arbeiten.
+    \item \textbf{Netzwerkübergreifende Kommunikation:} Router können das, Switches nicht.
+    \item \textbf{Geschwindigkeit:} Switches sind in der Regel schneller bei der Datenweiterleitung, da sie weniger komplexe Entscheidungen treffen müssen.
+\end{itemize}
+
+\vspace{1cm}
+
+\section{Teilauftrag 6}
+\subsection{\underline{Routing-Protokolle RIP und OSPF}}
+RIP und OSPF sind wie zwei verschiedene Straßenkarten, die dich zum selben Ziel führen können:
+\begin{itemize}[label={$\bullet$}]
+    \item \textbf{RIP:} Ist einfacher und verwendet den Hop Count als Metrik.
+    \item \textbf{OSPF:} Ist komplexer und verwendet Dijkstra's Algorithmus für eine effizientere Routenwahl.
+\end{itemize}
+
+\subsection{\underline{Begriff "Autonomes System"}}
+Ein autonomes System ist wie ein eigenes kleines Königreich im Internet. Es handelt sich um eine Sammlung von Netzwerken, die unter einer einzigen Verwaltungsdomäne stehen.
+
+\end{document}
