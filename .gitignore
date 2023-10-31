@@ -8,3 +8,6 @@ data/dataset_video/
 =======
 >>>>>>> 05e6975d8fcf9e499715ba5dd52f3dd979390d8c
 >>>>>>> bb206502e8087c2c6307982001253ae04ce2ddca
+data/cifar-10-python.tar.gz/cifar-10-python.tar.gz
+data/cifar-10-python.tar.gz/cifar-10-python.tar.gz
+src/test_torch.py
