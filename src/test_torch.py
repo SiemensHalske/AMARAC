@@ -1,3 +1,6 @@
+import urllib.request
+from torchvision.datasets.utils import download_url
+import os
 import torch
 import torch.nn as nn
 import torch.optim as optim
@@ -5,6 +8,8 @@ import torchvision.datasets as datasets
 import torchvision.transforms as transforms
 
 # Define the CNN architecture
+
+
 class CNN(nn.Module):
     def __init__(self):
         super(CNN, self).__init__()
@@ -24,9 +29,6 @@ class CNN(nn.Module):
         x = self.fc3(x)
         return x
 
-import urllib.request
-import os
-from torchvision.datasets.utils import download_url
 
 # Define the training and testing datasets
 train_dataset_url = 'http://www.cs.toronto.edu/~kriz/cifar-10-python.tar.gz'
@@ -39,19 +41,23 @@ if not os.path.exists('./data/cifar-10-python.tar.gz'):
     download_url(train_dataset_url, './data/cifar-10-python.tar.gz', None)
     download_url(test_dataset_url, './data/cifar-10-python.tar.gz', None)
 
-train_dataset = datasets.CIFAR10(root='./data', train=True, download=False, transform=transforms.ToTensor())
-test_dataset = datasets.CIFAR10(root='./data', train=False, download=False, transform=transforms.ToTensor())
+train_dataset = datasets.CIFAR10(
+    root='./data', train=True, download=False, transform=transforms.ToTensor())
+test_dataset = datasets.CIFAR10(
+    root='./data', train=False, download=False, transform=transforms.ToTensor())
 
 # Define the data loaders
-train_loader = torch.utils.data.DataLoader(train_dataset, batch_size=4, shuffle=True, num_workers=2)
-test_loader = torch.utils.data.DataLoader(test_dataset, batch_size=4, shuffle=False, num_workers=2)
+train_loader = torch.utils.data.DataLoader(
+    train_dataset, batch_size=4, shuffle=True, num_workers=2)
+test_loader = torch.utils.data.DataLoader(
+    test_dataset, batch_size=4, shuffle=False, num_workers=2)
 
 # Define the loss function and optimizer
+cnn = CNN()
 criterion = nn.CrossEntropyLoss()
 optimizer = optim.SGD(cnn.parameters(), lr=0.001, momentum=0.9)
 
 # Train the CNN
-cnn = CNN()
 for epoch in range(2):
     running_loss = 0.0
     for i, data in enumerate(train_loader, 0):
@@ -63,7 +69,8 @@ for epoch in range(2):
         optimizer.step()
         running_loss += loss.item()
         if i % 2000 == 1999:
-            print('[%d, %5d] loss: %.3f' % (epoch + 1, i + 1, running_loss / 2000))
+            print('[%d, %5d] loss: %.3f' %
+                  (epoch + 1, i + 1, running_loss / 2000))
             running_loss = 0.0
 
 print('Finished Training')
@@ -79,4 +86,5 @@ with torch.no_grad():
         total += labels.size(0)
         correct += (predicted == labels).sum().item()
 
-print('Accuracy of the network on the 10000 test images: %d %%' % (100 * correct / total))
+print('Accuracy of the network on the 10000 test images: %d %%' %
+      (100 * correct / total))
